@@ -83,15 +83,27 @@ namespace DNWS
       if(lines.Length == 1) return;
 
       for(int i = 1; i != lines.Length; i++) {
-        String[] pair = Regex.Split(lines[i], ": "); //FIXME
+        int index = lines[i].IndexOf(": ");
+        String[] pair;
+        if (index > 0)
+        {
+          pair = new String[] { lines[i].Substring(0, index), lines[i].Substring(index + 2) };
+        }
+        else
+        {
+          pair = new String[] { lines[i] };
+        }
         if(pair.Length == 0) continue;
-        if(pair.Length == 1) { // handle post body
-          if(pair[0].Length > 1) { //FIXME, this is a quick hack
-            Dictionary<String, String> _bodys = pair[0].Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0].ToLower(), x => x[1]);
-            _requestListDictionary = _requestListDictionary.Concat(_bodys).ToDictionary(x=>x.Key, x=>x.Value);
-          }
-        } else { // Length == 2, GET url request
+        // handle post body
+        if (_method == "POST" && pair[0].Length > 1)
+        {
+          _body = pair[0];
+        }
+        if(pair.Length == 2) { // Length == 2, GET url request
           addProperty(pair[0], pair[1]);
+        } else if(pair.Length == 1 && _method == "POST") { // handle post body
+          Dictionary<String, String> _bodys = pair[0].Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0].ToLower(), x => x[1]);
+          _requestListDictionary = _requestListDictionary.Concat(_bodys).ToDictionary(x=>x.Key, x=>x.Value);
         }
       }
     }
