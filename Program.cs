@@ -297,8 +297,6 @@ namespace DNWS
                     // Get one, show some info
                     _parent.Log("Client accepted:" + clientSocket.RemoteEndPoint.ToString());
                     HTTPProcessor hp = new HTTPProcessor(clientSocket, _parent);
-
-
                     if (Program.Configuration["Threading"].ToLower() == "Multi")
                     {
                         // Multi-threading mode
